@@ -1,9 +1,9 @@
+
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit, transpile
 from qiskit.providers.basic_provider import BasicProvider
 import random
 from math import pi
-from qiskit.visualization import plot_histogram, plot_bloch_multivector, plot_state_qsphere
-
+from qiskit.visualization import plot_histogram
 
 
 
@@ -16,8 +16,9 @@ def circuit_1():
 
     circuit = QuantumCircuit(qr_doors,qr_choices,qr_open,cr_result)
 
-    
     print("----------------------------------------------------------")
+    
+    circuit_ = int(input('To display the probability of winning without switch enter (0) | with switch enter (1):'))
     
     
     #Random winning door=====================================
@@ -38,7 +39,7 @@ def circuit_1():
     circuit.barrier()
     
     
-    #open door======================================
+    #open door===============================================
     circuit.ry(pi/4,6)
     circuit.ccx(0,0+3,6)
     circuit.ry(pi/-4,6)
@@ -56,25 +57,31 @@ def circuit_1():
     circuit.ccx(1,5,6)
     circuit.ccx(2,3,6)
     
+    #Swapping===============================================
+    
+    if circuit_==1:
+        circuit.barrier()
+        circuit.swap(3,5)
+        circuit.swap(4,5)
+        circuit.cswap(6,3,5)
+        circuit.cswap(6,4,5)
+        
     circuit.barrier()
     circuit.measure([0,1,2,3,4,5],[0,1,2,3,4,5])
-    
     
     
     provider = BasicProvider()
     backend = provider.get_backend('basic_simulator')
     
-    result2= backend.run(transpile(circuit,backend)).result().get_counts()
+    result= backend.run(transpile(circuit,backend)).result().get_counts()
     
-    plot_histogram(result2)
+    plot_histogram(result)
     
     circuit.draw('mpl')
     
     
     
     
-    
-
 def circuit_2():
     
     
@@ -179,10 +186,9 @@ def circuit_2():
     print("\n \n------------------------------------------------------------")
      
     
-    #circuit.draw('mpl')
+    circuit.draw('mpl')
 
 #===================================================================================================
-
 
 def main():
 
@@ -195,5 +201,6 @@ def main():
         
     else:
         print('You have entered an incorrect option')
-               
+               
+        
 main()
